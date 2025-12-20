@@ -22,7 +22,7 @@ export class AdminRequestsController {
   }
 
   @Post(':id/reject')
-  reject(@Param('id', ParseIntPipe) id: number) {
+  reject(@Param('id', ParseIntPipe) id: number, @Body() body?: { reason?: string }) {
     return this.adminRequestsService.reject(id);
   }
 }

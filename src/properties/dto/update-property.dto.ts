@@ -1,9 +1,17 @@
-import { IsOptional, IsString, IsNumber, Min, IsEnum, IsInt } from 'class-validator';
+import { IsOptional, IsString, IsEnum, IsNumber, IsInt, Min } from 'class-validator';
 
 export class UpdatePropertyDto {
   @IsOptional()
   @IsString()
   title?: string;
+
+  @IsOptional()
+  @IsString()
+  type?: string;
+
+  @IsOptional()
+  @IsString()
+  address?: string;
 
   @IsOptional()
   @IsString()

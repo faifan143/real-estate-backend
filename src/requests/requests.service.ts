@@ -59,26 +59,32 @@ export class RequestsService {
       },
     });
 
-    return this.formatRequest(request);
+    return {
+      requestId: request.id.toString(),
+      status: request.status,
+    };
   }
 
   async findMyRequests(userId: number) {
     const requests = await this.prisma.transactionRequest.findMany({
       where: { requesterId: userId },
-      include: {
-        property: {
-          select: {
-            id: true,
-            title: true,
-            location: true,
-            price: true,
-          },
-        },
+      select: {
+        id: true,
+        propertyId: true,
+        type: true,
+        status: true,
+        createdAt: true,
       },
       orderBy: { createdAt: 'desc' },
     });
 
-    return requests.map((req) => this.formatRequest(req));
+    return requests.map((req) => ({
+      requestId: req.id.toString(),
+      propertyId: req.propertyId.toString(),
+      type: req.type,
+      status: req.status,
+      createdAt: req.createdAt.toISOString(),
+    }));
   }
 
   async findOne(id: number, userId: number, role: string) {
@@ -115,24 +121,13 @@ export class RequestsService {
     }
 
     return {
-      id: request.id,
+      requestId: request.id.toString(),
+      propertyId: request.property.id.toString(),
+      requesterId: request.requesterId.toString(),
       type: request.type,
       status: request.status,
-      property: request.property,
-      requester: request.requester,
-      createdAt: request.createdAt,
-      updatedAt: request.updatedAt,
-    };
-  }
-
-  private formatRequest(request: any) {
-    return {
-      id: request.id,
-      type: request.type,
-      status: request.status,
-      property: request.property,
-      createdAt: request.createdAt,
-      updatedAt: request.updatedAt,
+      createdAt: request.createdAt.toISOString(),
+      decisionAt: request.decisionAt ? request.decisionAt.toISOString() : undefined,
     };
   }
 }

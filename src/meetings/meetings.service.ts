@@ -46,16 +46,12 @@ export class MeetingsService {
     });
 
     return meetings.map((meeting) => ({
-      id: meeting.id,
-      scheduledAt: meeting.scheduledAt,
+      meetingId: meeting.id.toString(),
+      propertyId: meeting.propertyId.toString(),
+      scheduledAt: meeting.scheduledAt.toISOString(),
       latitude: meeting.latitude,
       longitude: meeting.longitude,
-      status: meeting.status,
-      property: meeting.transactionRequest.property,
-      buyer: meeting.buyer,
-      seller: meeting.seller,
-      roleInMeeting: meeting.buyerId === userId ? 'buyer' : 'seller',
-      createdAt: meeting.createdAt,
+      roleInMeeting: meeting.buyerId === userId ? 'BUYER' : 'SELLER',
     }));
   }
 
@@ -105,15 +101,14 @@ export class MeetingsService {
     }
 
     return {
-      id: meeting.id,
-      scheduledAt: meeting.scheduledAt,
+      meetingId: meeting.id.toString(),
+      propertyId: meeting.propertyId.toString(),
+      buyerId: meeting.buyerId.toString(),
+      sellerId: meeting.sellerId.toString(),
+      scheduledAt: meeting.scheduledAt.toISOString(),
       latitude: meeting.latitude,
       longitude: meeting.longitude,
       status: meeting.status,
-      property: meeting.transactionRequest.property,
-      buyer: meeting.buyer,
-      seller: meeting.seller,
-      createdAt: meeting.createdAt,
     };
   }
 }

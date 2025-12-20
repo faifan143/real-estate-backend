@@ -9,37 +9,22 @@ export class AdminRequestsService {
   async findPending(status?: string) {
     const requests = await this.prisma.transactionRequest.findMany({
       where: status ? { status: status as any } : { status: 'PENDING' },
-      include: {
-        property: {
-          select: {
-            id: true,
-            title: true,
-            location: true,
-            price: true,
-            status: true,
-          },
-        },
-        requester: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            phone: true,
-          },
-        },
+      select: {
+        id: true,
+        propertyId: true,
+        requesterId: true,
+        type: true,
+        createdAt: true,
       },
       orderBy: { createdAt: 'desc' },
     });
 
     return requests.map((req) => ({
-      id: req.id,
+      requestId: req.id.toString(),
+      propertyId: req.propertyId.toString(),
+      requesterId: req.requesterId.toString(),
       type: req.type,
-      status: req.status,
-      property: req.property,
-      requester: req.requester,
-      createdAt: req.createdAt,
-      updatedAt: req.updatedAt,
+      createdAt: req.createdAt.toISOString(),
     }));
   }
 
@@ -81,9 +66,13 @@ export class AdminRequestsService {
         throw new ConflictException('Property already has an approved request');
       }
 
+      const now = new Date();
       const updatedRequest = await tx.transactionRequest.update({
         where: { id },
-        data: { status: 'APPROVED' },
+        data: { 
+          status: 'APPROVED',
+          decisionAt: now,
+        },
       });
 
       await tx.transactionRequest.updateMany({
@@ -92,7 +81,10 @@ export class AdminRequestsService {
           status: 'PENDING',
           id: { not: id },
         },
-        data: { status: 'REJECTED' },
+        data: { 
+          status: 'REJECTED',
+          decisionAt: now,
+        },
       });
 
       await tx.property.update({
@@ -102,6 +94,7 @@ export class AdminRequestsService {
 
       const meeting = await tx.meeting.create({
         data: {
+          propertyId: request.propertyId,
           transactionRequestId: id,
           buyerId: request.requesterId,
           sellerId: request.property.ownerId,
@@ -112,20 +105,9 @@ export class AdminRequestsService {
       });
 
       return {
-        request: {
-          id: updatedRequest.id,
-          type: updatedRequest.type,
-          status: updatedRequest.status,
-          createdAt: updatedRequest.createdAt,
-          updatedAt: updatedRequest.updatedAt,
-        },
-        meeting: {
-          id: meeting.id,
-          scheduledAt: meeting.scheduledAt,
-          latitude: meeting.latitude,
-          longitude: meeting.longitude,
-          status: meeting.status,
-        },
+        requestId: updatedRequest.id.toString(),
+        newStatus: 'APPROVED',
+        meetingId: meeting.id.toString(),
       };
     });
   }
@@ -145,15 +127,15 @@ export class AdminRequestsService {
 
     const updated = await this.prisma.transactionRequest.update({
       where: { id },
-      data: { status: 'REJECTED' },
+      data: { 
+        status: 'REJECTED',
+        decisionAt: new Date(),
+      },
     });
 
     return {
-      id: updated.id,
-      type: updated.type,
-      status: updated.status,
-      createdAt: updated.createdAt,
-      updatedAt: updated.updatedAt,
+      requestId: updated.id.toString(),
+      newStatus: 'REJECTED',
     };
   }
 }

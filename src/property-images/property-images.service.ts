@@ -30,7 +30,7 @@ export class PropertyImagesService {
     const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
 
     return {
-      imageId: image.id,
+      imageId: image.id.toString(),
       fileName: image.fileName,
       url: `${baseUrl}/uploads/${image.fileName}`,
     };
@@ -66,6 +66,6 @@ export class PropertyImagesService {
       where: { id: imageId },
     });
 
-    return { message: 'Image deleted successfully' };
+    return { success: true };
   }
 }

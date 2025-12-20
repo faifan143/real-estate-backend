@@ -22,30 +22,24 @@ export class AuthService {
     }
 
     const hashedPassword = await bcrypt.hash(dto.password, 10);
+    const nameParts = dto.name.trim().split(/\s+/);
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
 
     const user = await this.prisma.user.create({
       data: {
         email: dto.email,
         password: hashedPassword,
-        firstName: dto.firstName,
-        lastName: dto.lastName,
-        phone: dto.phone,
+        firstName,
+        lastName,
+        phone: '', // Default empty phone
         role: 'USER',
       },
     });
 
-    const token = this.generateToken(user.id, user.role);
-
     return {
-      token,
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        phone: user.phone,
-        role: user.role,
-      },
+      userId: user.id.toString(),
+      role: user.role,
     };
   }
 
@@ -64,18 +58,11 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const token = this.generateToken(user.id, user.role);
+    const accessToken = this.generateToken(user.id, user.role);
 
     return {
-      token,
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        phone: user.phone,
-        role: user.role,
-      },
+      accessToken,
+      role: user.role,
     };
   }
 
@@ -89,11 +76,7 @@ export class AuthService {
     }
 
     return {
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      phone: user.phone,
+      userId: user.id.toString(),
       role: user.role,
     };
   }

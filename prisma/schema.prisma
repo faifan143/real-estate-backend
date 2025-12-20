@@ -52,10 +52,17 @@ model User {
   @@map("users")
 }
 
+enum PropertyType {
+  HOUSE
+  APARTMENT
+}
+
 model Property {
   id          Int            @id @default(autoincrement())
   title       String
-  description String
+  type        String
+  description String?
+  address     String?
   price       Float
   location    String
   latitude    Float?
@@ -71,6 +78,7 @@ model Property {
   owner               User                 @relation("PropertyOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   images              PropertyImage[]
   transactionRequests TransactionRequest[]
+  meetings            Meeting[]
 
   @@map("properties")
 }
@@ -93,6 +101,7 @@ model TransactionRequest {
   type        TransactionType
   status      RequestStatus   @default(PENDING)
   createdAt   DateTime        @default(now())
+  decisionAt  DateTime?
   updatedAt   DateTime        @updatedAt
 
   property  Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
@@ -106,6 +115,7 @@ model TransactionRequest {
 
 model Meeting {
   id                   Int           @id @default(autoincrement())
+  propertyId           Int
   transactionRequestId Int           @unique
   buyerId              Int
   sellerId             Int
@@ -115,6 +125,7 @@ model Meeting {
   status               MeetingStatus @default(SCHEDULED)
   createdAt            DateTime      @default(now())
 
+  property            Property           @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   transactionRequest TransactionRequest @relation(fields: [transactionRequestId], references: [id], onDelete: Cascade)
   buyer              User               @relation("MeetingBuyer", fields: [buyerId], references: [id], onDelete: Cascade)
   seller             User               @relation("MeetingSeller", fields: [sellerId], references: [id], onDelete: Cascade)
