@@ -1,0 +1,188 @@
+# Property Details API Tests
+# Use with REST Client extension in VS Code or any HTTP client
+
+### Variables
+@baseUrl = http://localhost:3000
+@userToken = YOUR_USER_JWT_TOKEN_HERE
+@adminToken = YOUR_ADMIN_JWT_TOKEN_HERE
+
+### 1. Register User (if needed)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "testuser@example.com",
+  "password": "password123",
+  "firstName": "Test",
+  "lastName": "User",
+  "phone": "1234567890"
+}
+
+### 2. Login User
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "testuser@example.com",
+  "password": "password123"
+}
+
+### 3. Create Property WITH all new fields
+POST {{baseUrl}}/properties
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "title": "Modern Downtown Apartment",
+  "description": "Spacious 2-bedroom apartment in the heart of downtown with stunning city views",
+  "price": 350000,
+  "location": "123 Main St, Apt 5B, New York, NY 10001",
+  "latitude": 40.7489,
+  "longitude": -73.9680,
+  "area": 85.5,
+  "rooms": 2,
+  "floor": 5
+}
+
+### 4. Create Property WITHOUT new fields (backward compatible)
+POST {{baseUrl}}/properties
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "title": "Classic Family Home",
+  "description": "Beautiful 4-bedroom house in quiet neighborhood",
+  "price": 450000,
+  "location": "456 Oak Avenue, Boston, MA 02101"
+}
+
+### 5. Create Property with PARTIAL new fields
+POST {{baseUrl}}/properties
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "title": "Cozy Studio",
+  "description": "Perfect for students or young professionals",
+  "price": 150000,
+  "location": "789 Elm Street, Brooklyn, NY 11201",
+  "rooms": 1,
+  "floor": 2
+}
+
+### 6. Get All Properties (check if new fields appear)
+GET {{baseUrl}}/properties
+Authorization: Bearer {{userToken}}
+
+### 7. Get Single Property with Details
+GET {{baseUrl}}/properties/1
+Authorization: Bearer {{userToken}}
+
+### 8. Update Property - Only new fields
+PATCH {{baseUrl}}/properties/1
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "area": 90,
+  "rooms": 3
+}
+
+### 9. Update Property - Mix of old and new fields
+PATCH {{baseUrl}}/properties/1
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "price": 360000,
+  "latitude": 40.7500,
+  "longitude": -73.9700,
+  "floor": 6
+}
+
+### 10. Create Property - Test Validation (should fail - negative rooms)
+POST {{baseUrl}}/properties
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "title": "Test Validation",
+  "description": "This should fail",
+  "price": 100000,
+  "location": "Test Location",
+  "rooms": -1
+}
+
+### 11. Create Property - Test Validation (should fail - negative area)
+POST {{baseUrl}}/properties
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "title": "Test Validation",
+  "description": "This should fail",
+  "price": 100000,
+  "location": "Test Location",
+  "area": -50
+}
+
+### 12. Create Property - Basement floor (negative floor is allowed)
+POST {{baseUrl}}/properties
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "title": "Basement Office Space",
+  "description": "Commercial space in basement level",
+  "price": 200000,
+  "location": "100 Business Plaza, Chicago, IL 60601",
+  "latitude": 41.8781,
+  "longitude": -87.6298,
+  "area": 120,
+  "rooms": 3,
+  "floor": -1
+}
+
+### 13. Create Property with Coordinates (for Google Maps testing)
+POST {{baseUrl}}/properties
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "title": "Beachfront Condo",
+  "description": "Luxury condo with ocean views",
+  "price": 750000,
+  "location": "2000 Ocean Drive, Miami Beach, FL 33139",
+  "latitude": 25.7907,
+  "longitude": -80.1300,
+  "area": 150,
+  "rooms": 3,
+  "floor": 10
+}
+
+### Google Maps Link Format (use the coordinates above)
+# https://www.google.com/maps?q=25.7907,-80.1300
+
+### 14. Get Property and Check Response Format
+GET {{baseUrl}}/properties/1
+Authorization: Bearer {{userToken}}
+
+# Expected Response:
+# {
+#   "id": 1,
+#   "title": "...",
+#   "description": "...",
+#   "price": 350000,
+#   "location": "123 Main St...",
+#   "latitude": 40.7489,
+#   "longitude": -73.9680,
+#   "area": 85.5,
+#   "rooms": 2,
+#   "floor": 5,
+#   "status": "ACTIVE",
+#   "ownerId": 2,
+#   "owner": { ... },
+#   "createdAt": "...",
+#   "updatedAt": "...",
+#   "images": []
+# }

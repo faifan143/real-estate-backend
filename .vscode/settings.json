@@ -1,0 +1,7 @@
+{
+  "prisma.prismaPath": "node_modules/prisma",
+  "prisma.fileWatcher": true,
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  }
+}

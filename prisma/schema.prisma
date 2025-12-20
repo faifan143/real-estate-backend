@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum PropertyStatus {
+  ACTIVE
+  RESERVED
+  CLOSED
+}
+
+enum TransactionType {
+  BUY
+  RENT
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum MeetingStatus {
+  SCHEDULED
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  phone     String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ownedProperties     Property[]           @relation("PropertyOwner")
+  transactionRequests TransactionRequest[] @relation("RequestRequester")
+  meetingsAsBuyer     Meeting[]            @relation("MeetingBuyer")
+  meetingsAsSeller    Meeting[]            @relation("MeetingSeller")
+
+  @@map("users")
+}
+
+model Property {
+  id          Int            @id @default(autoincrement())
+  title       String
+  description String
+  price       Float
+  location    String
+  latitude    Float?
+  longitude   Float?
+  area        Float?
+  rooms       Int?
+  floor       Int?
+  status      PropertyStatus @default(ACTIVE)
+  ownerId     Int
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  owner               User                 @relation("PropertyOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  images              PropertyImage[]
+  transactionRequests TransactionRequest[]
+
+  @@map("properties")
+}
+
+model PropertyImage {
+  id         Int      @id @default(autoincrement())
+  propertyId Int
+  fileName   String
+  createdAt  DateTime @default(now())
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@map("property_images")
+}
+
+model TransactionRequest {
+  id          Int             @id @default(autoincrement())
+  propertyId  Int
+  requesterId Int
+  type        TransactionType
+  status      RequestStatus   @default(PENDING)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  property  Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  requester User     @relation("RequestRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  meeting   Meeting?
+
+  @@index([propertyId, status])
+  @@index([propertyId, requesterId])
+  @@map("transaction_requests")
+}
+
+model Meeting {
+  id                   Int           @id @default(autoincrement())
+  transactionRequestId Int           @unique
+  buyerId              Int
+  sellerId             Int
+  scheduledAt          DateTime
+  latitude             Float
+  longitude            Float
+  status               MeetingStatus @default(SCHEDULED)
+  createdAt            DateTime      @default(now())
+
+  transactionRequest TransactionRequest @relation(fields: [transactionRequestId], references: [id], onDelete: Cascade)
+  buyer              User               @relation("MeetingBuyer", fields: [buyerId], references: [id], onDelete: Cascade)
+  seller             User               @relation("MeetingSeller", fields: [sellerId], references: [id], onDelete: Cascade)
+
+  @@map("meetings")
+}
