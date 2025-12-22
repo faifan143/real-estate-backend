@@ -31,8 +31,14 @@ COPY prisma ./prisma/
 # Install production dependencies only
 RUN npm ci --only=production
 
-# Generate Prisma Client for production
+# Install Prisma CLI locally to generate client with correct binaries
+RUN npm install prisma@6.0.1
+
+# Generate Prisma Client
 RUN npx prisma generate
+
+# Remove Prisma CLI (keep only the generated client)
+RUN npm uninstall prisma
 
 # Copy built application from builder
 COPY --from=builder /app/dist ./dist

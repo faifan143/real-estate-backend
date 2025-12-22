@@ -25,11 +25,15 @@ services:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/realestate
       PORT: 3000
       HOST: 0.0.0.0
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
+      BASE_URL: ${BASE_URL:-http://localhost:3000}
     depends_on:
       db:
         condition: service_healthy
     volumes:
       - ./public/uploads:/app/public/uploads
+    env_file:
+      - .env
 
 volumes:
   postgres_data:
