@@ -7,6 +7,7 @@ import { PropertyImagesModule } from './property-images/property-images.module';
 import { RequestsModule } from './requests/requests.module';
 import { AdminRequestsModule } from './admin-requests/admin-requests.module';
 import { MeetingsModule } from './meetings/meetings.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { MeetingsModule } from './meetings/meetings.module';
     RequestsModule,
     AdminRequestsModule,
     MeetingsModule,
+    HealthModule,
   ],
   providers: [
     {
