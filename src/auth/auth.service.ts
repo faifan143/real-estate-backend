@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -75,9 +76,45 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
+    const accessToken = this.generateToken(user.id, user.role);
+
     return {
       userId: user.id.toString(),
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phone: user.phone,
       role: user.role,
+      accessToken,
+    };
+  }
+
+  async updateProfile(userId: number, dto: UpdateProfileDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    const updateData: any = {};
+    if (dto.firstName !== undefined) updateData.firstName = dto.firstName;
+    if (dto.lastName !== undefined) updateData.lastName = dto.lastName;
+    if (dto.phone !== undefined) updateData.phone = dto.phone;
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+    });
+
+    return {
+      userId: updatedUser.id.toString(),
+      email: updatedUser.email,
+      firstName: updatedUser.firstName,
+      lastName: updatedUser.lastName,
+      phone: updatedUser.phone,
+      role: updatedUser.role,
     };
   }
 

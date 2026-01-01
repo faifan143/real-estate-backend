@@ -34,19 +34,23 @@ export class PropertiesService {
 
   async findAll() {
     const properties = await this.prisma.property.findMany({
-      select: {
-        id: true,
-        title: true,
-        type: true,
-        status: true,
+      include: {
+        images: true,
       },
     });
+
+    const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
 
     return properties.map((property) => ({
       propertyId: property.id.toString(),
       title: property.title,
       type: property.type,
       status: property.status,
+      images: property.images.map((img) => ({
+        imageId: img.id.toString(),
+        fileName: img.fileName,
+        url: `${baseUrl}/uploads/${img.fileName}`,
+      })),
     }));
   }
 
