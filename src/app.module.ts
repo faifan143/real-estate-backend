@@ -8,6 +8,7 @@ import { RequestsModule } from './requests/requests.module';
 import { AdminRequestsModule } from './admin-requests/admin-requests.module';
 import { MeetingsModule } from './meetings/meetings.module';
 import { HealthModule } from './health/health.module';
+import { PricePredictionModule } from './price-prediction/price-prediction.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { HealthModule } from './health/health.module';
     AdminRequestsModule,
     MeetingsModule,
     HealthModule,
+    PricePredictionModule,
   ],
   providers: [
     {
