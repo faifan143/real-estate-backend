@@ -1,0 +1,116 @@
+city,type,neighborhood,area_sqm,rooms,floor,price_min_usd,price_max_usd,price_per_sqm_usd,condition,year,tier,notes
+# ALEPPO - Prime Areas
+Aleppo,APARTMENT,Al-Shahbaa,120,3,5,60000,120000,800,modern,2025,prime,Prime neighborhood
+Aleppo,APARTMENT,Al-Aziziyah,130,3,4,70000,120000,850,modern,2025,prime,Prime with elevator
+Aleppo,APARTMENT,Al-Aziziyah,150,4,6,100000,150000,900,luxury,2025,prime,High-end finishes
+Aleppo,APARTMENT,Al-Furqan,140,3,6,65000,110000,750,modern,2025,prime,Near university premium
+Aleppo,APARTMENT,Al-Furqan,120,3,4,60000,90000,700,good,2025,prime,Standard quality
+Aleppo,APARTMENT,Sulaymaniyah,140,3,6,90000,140000,1000,luxury,2025,prime,Central upscale area
+Aleppo,APARTMENT,Sulaymaniyah,120,3,5,70000,120000,900,modern,2025,prime,Modern building
+Aleppo,APARTMENT,Al-Jamiliyah,130,3,4,65000,100000,750,good,2025,prime,Good infrastructure
+# ALEPPO - Mid-Range Areas
+Aleppo,APARTMENT,New Aleppo East,120,3,3,60000,100000,700,modern,2025,mid,Developing area
+Aleppo,APARTMENT,New Aleppo West,110,2,4,60000,100000,750,modern,2025,mid,Developing area
+Aleppo,APARTMENT,Al-Shaabiah New,100,2,3,60000,120000,900,new,2025,mid,New construction
+Aleppo,APARTMENT,Al-Muqambo,100,2,2,50000,90000,700,good,2025,mid,Central mid-range
+Aleppo,APARTMENT,Al-Sabil,90,2,3,50000,90000,700,good,2025,mid,Good services
+Aleppo,APARTMENT,Al-Hamdaniyah,100,3,2,30000,60000,400,varies,2025,mid,Affordable option
+Aleppo,APARTMENT,Al-Hamdaniyah,120,3,3,35000,70000,450,good,2025,mid,Better condition
+Aleppo,APARTMENT,Al-Nil Street,90,2,3,30000,60000,500,varies,2025,mid,Mid-range area
+Aleppo,APARTMENT,Al-Midan,100,3,3,30000,40000,350,modern,2024,mid,Affordable modern
+Aleppo,APARTMENT,Al-Midan,110,3,2,40000,55000,450,good,2024,mid,Multi-floor house
+Aleppo,APARTMENT,Al-Midan,130,4,1,45000,60000,400,modern,2024,mid,Duplex with garden
+Aleppo,APARTMENT,Al-Ansari,90,2,3,20000,26000,270,renovated,2024,mid,Good investment
+Aleppo,APARTMENT,Al-Ansari,100,3,2,25000,35000,300,modern,2024,mid,High rental demand
+# ALEPPO - Budget Areas
+Aleppo,APARTMENT,Hanano,80,2,2,15000,30000,300,needs_renovation,2025,budget,Popular budget area
+Aleppo,APARTMENT,Al-Sakhour,85,2,1,15000,30000,280,needs_renovation,2025,budget,Reconstruction zone
+Aleppo,APARTMENT,Al-Shaar,90,2,2,18000,35000,320,varies,2025,budget,Budget option
+Aleppo,APARTMENT,Al-Bab Road,80,2,1,18000,35000,350,varies,2025,budget,Outskirts
+Aleppo,APARTMENT,Aleppo Countryside West,100,3,1,20000,45000,350,varies,2025,budget,Rural pricing
+Aleppo,APARTMENT,Al-Midan,70,2,1,15000,22000,250,needs_renovation,2024,budget,Old building
+Aleppo,APARTMENT,Al-Ansari East,80,2,2,13000,18000,200,old,2024,budget,Cheapest option
+Aleppo,APARTMENT,Al-Haidariya,75,2,1,12000,25000,250,needs_renovation,2025,budget,Budget starter
+Aleppo,APARTMENT,Al-Marjeh,80,2,2,14000,28000,280,needs_renovation,2025,budget,Investment potential
+Aleppo,APARTMENT,Under Construction,100,3,0,45000,75000,600,new,2025,mid,Pre-sale units
+# ALEPPO - Houses
+Aleppo,HOUSE,Al-Shahbaa,180,4,1,60000,150000,700,varies,2025,prime,Prime family home
+Aleppo,HOUSE,Al-Aziziyah,200,5,1,80000,150000,650,modern,2025,prime,With garden
+Aleppo,HOUSE,Al-Furkan,220,5,2,100000,200000,800,luxury,2025,prime,Modern complex
+Aleppo,HOUSE,Al-Siryian,150,4,1,35000,80000,450,varies,2025,mid,Mid-range house
+Aleppo,HOUSE,Al-Midan,160,4,1,35000,80000,450,varies,2025,mid,Family home
+Aleppo,HOUSE,Al-Jamiliyah,180,4,1,40000,80000,400,good,2025,mid,Good neighborhood
+Aleppo,HOUSE,Al-Haidariya,120,3,1,15000,30000,220,needs_renovation,2025,budget,Budget house
+Aleppo,HOUSE,Al-Sakhour,130,3,1,15000,30000,200,needs_renovation,2025,budget,Reconstruction area
+Aleppo,HOUSE,Al-Marjeh,140,4,1,15000,30000,180,needs_renovation,2025,budget,Investment opportunity
+Aleppo,HOUSE,Aleppo Outskirts,160,4,1,10000,25000,130,varies,2025,budget,Land value growth
+Aleppo,HOUSE,Al-Ansari,150,4,1,35000,45000,280,good,2024,mid,Independent house
+Aleppo,HOUSE,Al-Ansari,180,4,2,45000,55000,280,modern,2024,mid,Duplex with balcony
+# DAMASCUS - Premium Areas
+Damascus,APARTMENT,Al-Malki,150,3,5,250000,500000,2500,luxury,2025,premium,Most expensive area
+Damascus,APARTMENT,Al-Malki,200,4,6,400000,700000,3000,luxury,2025,premium,Top tier Damascus
+Damascus,APARTMENT,Al-Malki,280,5,4,600000,800000,2500,luxury,2024,premium,Large luxury unit
+Damascus,APARTMENT,Abu Rummaneh,140,3,4,250000,450000,2800,luxury,2025,premium,Historic upscale
+Damascus,APARTMENT,Abu Rummaneh,180,4,5,350000,600000,3000,luxury,2025,premium,Premium location
+Damascus,APARTMENT,Al-Muhajireen,130,3,3,200000,400000,2500,luxury,2025,premium,Mountain views
+Damascus,APARTMENT,Shukri Al-Quwatli,160,3,5,300000,500000,2700,luxury,2025,premium,Boulevard location
+# DAMASCUS - Modern Areas
+Damascus,APARTMENT,Mezzeh,140,3,5,120000,250000,1500,modern,2025,high,Well-serviced zone
+Damascus,APARTMENT,Mezzeh,170,4,6,150000,300000,1600,luxury,2025,high,Sheikh Saad area
+Damascus,APARTMENT,Mezzeh,120,3,4,100000,180000,1300,good,2025,high,Standard modern
+Damascus,APARTMENT,Kafr Sousa,150,3,4,120000,250000,1400,modern,2025,high,Growing area
+Damascus,APARTMENT,Kafr Sousa,180,4,5,160000,300000,1500,luxury,2025,high,High-end buildings
+Damascus,APARTMENT,Kafr Sousa,200,4,6,200000,350000,1600,luxury,2025,high,Premium units
+Damascus,APARTMENT,Marota City,120,3,10,120000,192000,1400,new,2025,high,New development
+Damascus,APARTMENT,Marota City,150,4,12,150000,240000,1400,new,2025,high,Modern towers
+Damascus,APARTMENT,Dummar Project,140,3,8,130000,250000,1500,modern,2025,high,Tower living
+Damascus,APARTMENT,Dummar Project,160,4,10,170000,300000,1700,luxury,2025,high,City views
+# DAMASCUS - Mid-Range Areas
+Damascus,APARTMENT,Zahira,120,3,3,70000,120000,850,good,2025,mid,Accessible area
+Damascus,APARTMENT,Al-Adawi,130,3,4,80000,140000,950,renovated,2025,mid,Refurbished units
+Damascus,APARTMENT,Bab Sharqi,100,2,2,70000,110000,950,varies,2025,mid,Historic area
+Damascus,APARTMENT,Bab Sharqi,140,3,3,90000,140000,900,good,2025,mid,Central location
+Damascus,APARTMENT,Qudsaya,120,3,3,110000,170000,1200,modern,2025,mid,Damascus suburbs
+# DAMASCUS - Budget Areas
+Damascus,APARTMENT,Barzeh,100,2,2,35000,70000,550,varies,2025,budget,Affordable option
+Damascus,APARTMENT,Barzeh,120,3,3,45000,90000,650,good,2025,budget,Better condition
+Damascus,APARTMENT,Rukn al-Din,90,2,2,40000,75000,700,varies,2025,budget,Future potential
+Damascus,APARTMENT,Masaken Barzeh,80,2,1,35000,60000,600,needs_renovation,2025,budget,Starter homes
+# DAMASCUS - Villas
+Damascus,HOUSE,Dummar,250,5,2,300000,900000,2500,luxury,2025,premium,Villas with views
+Damascus,HOUSE,Al-Malki,300,6,2,800000,1500000,4000,luxury,2025,premium,Exclusive villas
+Damascus,HOUSE,Mezzeh,220,5,2,400000,800000,3000,luxury,2025,high,Family villas
+# LATAKIA - Coastal Premium
+Latakia,APARTMENT,Al-Amerkan,100,2,4,150000,220000,1800,luxury,2025,prime,Coastal prime
+Latakia,APARTMENT,Al-Amerkan,120,3,5,180000,270000,2000,luxury,2025,prime,Sea views
+Latakia,APARTMENT,Az-Zira'a,110,3,3,165000,230000,1900,modern,2025,prime,Agricultural area
+Latakia,APARTMENT,Tenth Project,100,2,4,150000,200000,1800,modern,2025,prime,Popular development
+Latakia,APARTMENT,Seafront,120,3,5,80000,150000,1100,varies,2025,prime,Beach access
+Latakia,APARTMENT,Seafront,150,4,6,120000,180000,1100,luxury,2025,prime,Premium sea view
+# LATAKIA - Mid-Range
+Latakia,APARTMENT,City Center,100,2,3,30000,50000,400,good,2025,mid,Compact apartment
+Latakia,APARTMENT,City Center,130,3,4,40000,70000,480,modern,2025,mid,Family unit
+Latakia,APARTMENT,Residential Areas,100,3,2,30000,70000,550,varies,2025,mid,Standard housing
+# LATAKIA - Budget
+Latakia,APARTMENT,Inner Districts,60,1,2,18000,28000,400,basic,2025,budget,One bedroom
+Latakia,APARTMENT,Inner Districts,80,2,2,22000,35000,380,basic,2025,budget,Budget option
+Latakia,APARTMENT,Outskirts,100,2,1,25000,40000,350,varies,2025,budget,Affordable area
+# HOMS
+Homs,APARTMENT,IPC District,120,3,4,60000,100000,700,new,2025,prime,New development
+Homs,APARTMENT,City Center,100,2,3,100000,140000,1200,modern,2025,mid,Central location
+Homs,APARTMENT,Outside Center,100,2,2,35000,55000,450,varies,2025,budget,Affordable option
+Homs,APARTMENT,Suburbs,80,2,1,25000,40000,400,needs_renovation,2025,budget,Budget starter
+# TARTUS - Coastal
+Tartus,APARTMENT,City Center,120,3,4,55000,120000,850,modern,2025,prime,Central coastal
+Tartus,APARTMENT,Coastal Promenade,130,3,5,70000,120000,850,modern,2025,prime,Sea views
+Tartus,APARTMENT,Al-Ghadeer,100,2,3,45000,80000,700,good,2025,mid,Residential area
+Tartus,APARTMENT,Al-Areed,110,3,3,50000,80000,650,good,2025,mid,Mid-range
+Tartus,APARTMENT,Dahiyat Al-Assad,90,2,2,30000,50000,500,varies,2025,budget,Government housing
+Tartus,APARTMENT,Under Construction,100,3,0,25000,65000,500,new,2025,budget,Pre-sale
+# TARTUS - Houses
+Tartus,HOUSE,Inner Neighborhoods,100,2,1,25000,40000,350,varies,2025,mid,Small house
+Tartus,HOUSE,Near Center,140,3,1,45000,70000,450,good,2025,mid,Medium house
+Tartus,HOUSE,Sea View Areas,180,4,1,80000,150000,750,modern,2025,prime,Large with views
+# SAFITA/DREIKISH (Tartus suburbs)
+Tartus,APARTMENT,Safita,100,2,2,55000,80000,700,good,2025,mid,Mountain town
+Tartus,APARTMENT,Dreikish,90,2,2,50000,70000,700,good,2025,mid,Quiet suburb

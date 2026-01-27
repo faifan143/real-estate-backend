@@ -1,0 +1,36 @@
+type,neighborhood,area_sqm,rooms,floor,price_min_usd,price_max_usd,condition,year,notes
+APARTMENT,Al-Shahbaa,120,3,5,60000,120000,modern,2025,Prime neighborhood
+APARTMENT,Al-Aziziyah,130,3,4,70000,120000,modern,2025,Prime neighborhood with elevator
+APARTMENT,Al-Furqan,140,3,6,65000,110000,modern,2025,Higher prices near university
+APARTMENT,New Aleppo East,120,3,3,60000,100000,modern,2025,Developing area
+APARTMENT,New Aleppo West,110,2,4,60000,100000,modern,2025,Developing area
+APARTMENT,Al-Shaabiah New,100,2,3,60000,120000,new,2025,New construction
+APARTMENT,Al-Muqambo,100,2,2,50000,90000,good,2025,Mid-range area
+APARTMENT,Al-Sabil,90,2,3,50000,90000,good,2025,Mid-range area
+APARTMENT,Al-Hamdaniyah,100,3,2,30000,60000,varies,2025,More affordable
+APARTMENT,Al-Nil Street,90,2,3,30000,60000,varies,2025,Mid-range condition
+APARTMENT,Hanano,80,2,2,15000,30000,needs_renovation,2025,Budget area
+APARTMENT,Al-Sakhour,85,2,1,15000,30000,needs_renovation,2025,Budget area
+APARTMENT,Al-Shaar,90,2,2,18000,35000,varies,2025,Budget area
+APARTMENT,Al-Bab Road,80,2,1,18000,35000,varies,2025,Budget area
+APARTMENT,Aleppo Countryside West,100,3,1,20000,45000,varies,2025,Rural area
+APARTMENT,Al-Midan,100,3,3,30000,40000,modern,2024,Mid-range
+APARTMENT,Al-Midan,110,3,2,40000,55000,old_building,2024,Duplex style
+APARTMENT,Al-Midan,70,2,1,15000,22000,needs_renovation,2024,Old building renovatable
+APARTMENT,Al-Ansari,80,2,2,13000,18000,old,2024,Eastern Ansari cheaper
+APARTMENT,Al-Ansari,90,2,3,20000,26000,renovated,2024,Good investment area
+APARTMENT,Al-Zahra,181,4,5,275000,275000,luxury,2024,Premium listing
+APARTMENT,Sulaymaniyah,140,3,6,70000,120000,high_end,2025,Central upscale
+APARTMENT,Under Construction,100,3,0,45000,75000,new,2025,Pre-sale units
+HOUSE,Al-Shahbaa,180,4,1,60000,150000,varies,2025,Prime area
+HOUSE,Al-Aziziyah,200,5,1,80000,150000,modern,2025,Prime with garden
+HOUSE,Al-Furkan,220,5,2,100000,200000,luxury,2025,Modern complex
+HOUSE,Al-Siryian,150,4,1,35000,80000,varies,2025,Mid-range
+HOUSE,Al-Midan,160,4,1,35000,80000,varies,2025,Mid-range
+HOUSE,Al-Jamiliyah,180,4,1,40000,80000,good,2025,Mid-range quality
+HOUSE,Al-Haidariya,120,3,1,15000,30000,needs_renovation,2025,Budget area
+HOUSE,Al-Sakhour,130,3,1,15000,30000,needs_renovation,2025,Budget area
+HOUSE,Al-Marjeh,140,4,1,15000,30000,needs_renovation,2025,Budget investment
+HOUSE,Aleppo Outskirts,160,4,1,10000,25000,varies,2025,Future growth potential
+HOUSE,Al-Ansari,150,4,1,35000,45000,good,2024,Independent house
+HOUSE,Al-Ansari,180,4,2,45000,55000,modern,2024,Duplex with balcony
