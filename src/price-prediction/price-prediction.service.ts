@@ -268,7 +268,7 @@ Note: Prices quoted in USD due to Syrian Pound volatility. Market recovering wit
         images,
         stream: false,
         options: {
-          temperature: 0.3,
+          temperature: 0,
           num_predict: 400,
         },
       }),
@@ -302,7 +302,7 @@ Note: Prices quoted in USD due to Syrian Pound volatility. Market recovering wit
         prompt,
         stream: false,
         options: {
-          temperature: 0.3,
+          temperature: 0,
           num_predict: 300,
         },
       }),
@@ -340,12 +340,13 @@ From the images, assess:
 
 CALCULATION METHOD:
 1. Identify the city and neighborhood tier (premium/mid/budget)
-2. Use the market data above to find appropriate $/sqm rate
-3. Multiply: area × price_per_sqm = estimated price
+2. Use the market data above to find appropriate $/sqm rate for SALE (estimatedBuyPrice = total property value in USD)
+3. For RENT: estimate typical monthly rent (estimatedMonthlyRent in USD). Rent is usually 0.3-0.8% of buy price per month depending on market (e.g. Syria ~0.4-0.6%).
 4. Adjust based on: condition (+/-20%), floor level, views
+5. Always write "reasoning" in Arabic.
 
-RESPOND ONLY in this JSON format:
-{"estimatedPrice": <number in USD>, "confidence": "<low|medium|high>", "reasoning": "<explain calculation using market data>", "visualAssessment": "<condition from images>"}`;
+RESPOND ONLY in this JSON format. Keep keys in English:
+{"estimatedBuyPrice": <number USD>, "estimatedMonthlyRent": <number USD>, "confidence": "<low|medium|high>", "reasoning": "<اشرح تقدير سعر الشراء والإيجار بالعربية>", "visualAssessment": "<تقييم من الصور بالعربية>"}`;
   }
 
   private buildTextPrompt(dto: PredictPriceDto, marketContext: string): string {
@@ -364,12 +365,13 @@ ${dto.description ? `- Description: ${dto.description}` : ""}
 CALCULATION METHOD:
 1. Identify the city from the location
 2. Determine neighborhood tier (premium/mid/budget) based on location description
-3. Use the market data above to find appropriate $/sqm rate
-4. Calculate: area × price_per_sqm = estimated price
+3. Use the market data above: estimatedBuyPrice = total property value in USD (area × price_per_sqm, adjusted)
+4. estimatedMonthlyRent = typical monthly rent in USD (Syria often 0.4-0.6% of buy price per month)
 5. Adjust for: number of rooms, floor level if apartment
+6. Always write "reasoning" in Arabic.
 
-RESPOND ONLY in this JSON format:
-{"estimatedPrice": <number in USD>, "confidence": "<low|medium|high>", "reasoning": "<show your calculation using market data>"}`;
+RESPOND ONLY in this JSON format. Keep keys in English:
+{"estimatedBuyPrice": <number USD>, "estimatedMonthlyRent": <number USD>, "confidence": "<low|medium|high>", "reasoning": "<اشرح تقدير سعر الشراء والإيجار بالعربية>"}`;
   }
 
   private parseResponse(
@@ -377,32 +379,58 @@ RESPOND ONLY in this JSON format:
     dto: PredictPriceDto,
     source: string,
   ) {
+    const fallbackBuy = this.calculateFallbackPrice(dto);
+    const fallbackRent = this.calculateFallbackMonthlyRent(dto, fallbackBuy);
+    const defaultReasoning = "بناءً على مواصفات العقار والموقع.";
+
     try {
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         const parsed = JSON.parse(jsonMatch[0]);
+        let buy = this.toNumber(parsed.estimatedBuyPrice) ?? this.toNumber(parsed.estimatedPrice) ?? fallbackBuy;
+        let rent = this.toNumber(parsed.estimatedMonthlyRent);
+        if (rent == null && buy > 0) rent = Math.round((buy * 0.005)); // 0.5% per month
+        if (buy == null && rent != null && rent > 0) buy = Math.round(rent * 200); // ~6% annual yield
         return {
-          estimatedPrice:
-            parsed.estimatedPrice || this.calculateFallbackPrice(dto),
+          estimatedPrice: buy,
+          estimatedBuyPrice: buy,
+          estimatedMonthlyRent: rent ?? fallbackRent,
           currency: "USD",
           confidence: parsed.confidence || "medium",
-          reasoning:
-            parsed.reasoning ||
-            "Based on property characteristics and location.",
+          reasoning: parsed.reasoning || defaultReasoning,
           visualAssessment: parsed.visualAssessment || null,
           source: source === "vision" ? "llm-vision" : "llm-text",
         };
       }
     } catch {
-      const priceMatch = response.match(/\$?([\d,]+)/);
-      if (priceMatch) {
+      const priceMatch = response.match(/"estimatedBuyPrice"\s*:\s*(\d+(?:\.\d+)?)/);
+      const rentMatch = response.match(/"estimatedMonthlyRent"\s*:\s*(\d+(?:\.\d+)?)/);
+      if (priceMatch || rentMatch) {
+        const buy = priceMatch ? parseFloat(priceMatch[1]) : fallbackBuy;
+        const rent = rentMatch ? parseFloat(rentMatch[1]) : Math.round(buy * 0.005);
         return {
-          estimatedPrice: parseInt(priceMatch[1].replace(/,/g, "")),
+          estimatedPrice: buy,
+          estimatedBuyPrice: buy,
+          estimatedMonthlyRent: rent,
           currency: "USD",
           confidence: "low",
-          reasoning: response.slice(0, 200),
+          reasoning: response.slice(0, 300),
           visualAssessment: null,
-          source,
+          source: source === "vision" ? "llm-vision" : "llm-text",
+        };
+      }
+      const anyNum = response.match(/\$?\s*([\d,]+)/);
+      if (anyNum) {
+        const buy = parseInt(anyNum[1].replace(/,/g, ""), 10);
+        return {
+          estimatedPrice: buy,
+          estimatedBuyPrice: buy,
+          estimatedMonthlyRent: Math.round(buy * 0.005),
+          currency: "USD",
+          confidence: "low",
+          reasoning: response.slice(0, 300),
+          visualAssessment: null,
+          source: source === "vision" ? "llm-vision" : "llm-text",
         };
       }
     }
@@ -410,16 +438,32 @@ RESPOND ONLY in this JSON format:
     return this.fallbackEstimation(dto);
   }
 
+  private toNumber(v: unknown): number | null {
+    if (v == null) return null;
+    if (typeof v === "number" && !Number.isNaN(v)) return v;
+    const n = parseFloat(String(v));
+    return Number.isNaN(n) ? null : n;
+  }
+
   private fallbackEstimation(dto: PredictPriceDto) {
-    const price = this.calculateFallbackPrice(dto);
+    const buyPrice = this.calculateFallbackPrice(dto);
+    const monthlyRent = this.calculateFallbackMonthlyRent(dto, buyPrice);
     return {
-      estimatedPrice: price,
+      estimatedPrice: buyPrice,
+      estimatedBuyPrice: buyPrice,
+      estimatedMonthlyRent: monthlyRent,
       currency: "USD",
       confidence: "medium",
-      reasoning: `Estimated using Syria market data: ${dto.area}sqm × calculated rate for ${dto.location}.`,
+      reasoning: `تقدير باستخدام بيانات السوق السورية: ${dto.area} م² × سعر المنطقة لـ ${dto.location}. الإيجار الشهري تقريبي.`,
       visualAssessment: null,
       source: "fallback",
     };
+  }
+
+  /** Monthly rent estimate (USD). Uses ~0.5% of buy price per month when buyPrice provided. */
+  private calculateFallbackMonthlyRent(dto: PredictPriceDto, buyPrice?: number): number {
+    const buy = buyPrice ?? this.calculateFallbackPrice(dto);
+    return Math.round(buy * 0.005); // 0.5% per month ≈ 6% annual yield
   }
 
   private calculateFallbackPrice(dto: PredictPriceDto): number {
