@@ -1,0 +1,328 @@
+<!doctype html>
+<html dir="rtl" lang="ar">
+  <head>
+    <meta charset="UTF-8" />
+    <title>نظام التنبؤ بالأسعار باستخدام الذكاء الاصطناعي</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+        direction: rtl;
+        text-align: right;
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+        line-height: 1.8;
+      }
+      h1 {
+        color: #2c3e50;
+        border-bottom: 3px solid #3498db;
+        padding-bottom: 10px;
+      }
+      h2 {
+        color: #34495e;
+        margin-top: 40px;
+        border-right: 4px solid #3498db;
+        padding-right: 15px;
+      }
+      h3 {
+        color: #7f8c8d;
+      }
+      h4 {
+        color: #95a5a6;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 20px 0;
+      }
+      th,
+      td {
+        border: 1px solid #bdc3c7;
+        padding: 12px;
+        text-align: right;
+      }
+      th {
+        background-color: #3498db;
+        color: white;
+      }
+      tr:nth-child(even) {
+        background-color: #ecf0f1;
+      }
+      code {
+        background-color: #f4f4f4;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: Consolas, monospace;
+        direction: ltr;
+      }
+      pre {
+        background-color: #2c3e50;
+        color: #ecf0f1;
+        padding: 15px;
+        border-radius: 5px;
+        direction: ltr;
+        text-align: left;
+        overflow-x: auto;
+      }
+      .note {
+        background-color: #e8f4f8;
+        border-right: 4px solid #3498db;
+        padding: 15px;
+        margin: 20px 0;
+      }
+      .important {
+        background-color: #fdecea;
+        border-right: 4px solid #e74c3c;
+        padding: 15px;
+        margin: 20px 0;
+      }
+      img {
+        max-width: 100%;
+        height: auto;
+        margin: 20px 0;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      ul,
+      ol {
+        padding-right: 30px;
+      }
+      li {
+        margin: 8px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>نظام التنبؤ بالأسعار باستخدام الذكاء الاصطناعي</h1>
+
+    <hr />
+
+    <h2>نظرة عامة على النظام</h2>
+
+    <h3>شرح المخطط</h3>
+    <p>
+      يوضح هذا المخطط البنية العامة للنظام والتي تتكون من ثلاث طبقات رئيسية:
+    </p>
+
+    <h4>١. طبقة العميل (Client Layer)</h4>
+    <ul>
+      <li>
+        <strong>تطبيق الهاتف المحمول</strong>: واجهة المستخدم على الهواتف الذكية
+      </li>
+      <li><strong>تطبيق الويب</strong>: واجهة المستخدم على المتصفح</li>
+    </ul>
+    <p>كلا التطبيقين يتواصلان مع الخادم الخلفي عبر نفس الـ API.</p>
+
+    <h4>٢. طبقة الـ API</h4>
+    <ul>
+      <li>
+        <strong>خادم NestJS (المنفذ 3000)</strong>: الخادم الخلفي الرئيسي الذي
+        يستقبل جميع الطلبات ويعالجها
+      </li>
+    </ul>
+
+    <h4>٣. طبقة البيانات والذكاء الاصطناعي</h4>
+    <ul>
+      <li>
+        <strong>PostgreSQL</strong>: قاعدة البيانات لتخزين معلومات العقارات
+        والمستخدمين
+      </li>
+      <li>
+        <strong>مخزن الملفات</strong>: مجلد <code>/public/uploads</code> لتخزين
+        صور العقارات
+      </li>
+      <li>
+        <strong>Ollama LLM (المنفذ 11434)</strong>: محرك الذكاء الاصطناعي المحلي
+        لتقدير الأسعار
+      </li>
+    </ul>
+
+    <div class="important">
+      <strong>ملاحظة هامة:</strong> جميع عمليات الذكاء الاصطناعي تتم محلياً على
+      جهازك - لا يتم إرسال أي بيانات إلى الإنترنت.
+    </div>
+
+    <hr />
+
+    <h2>آلية العمل</h2>
+
+    <h3>شرح تدفق البيانات</h3>
+    <p>هذا المخطط يوضح الخطوات الأساسية لعملية التنبؤ بالسعر:</p>
+
+    <table>
+      <tr>
+        <th>الخطوة</th>
+        <th>الوصف</th>
+      </tr>
+      <tr>
+        <td><strong>١</strong></td>
+        <td>
+          يرسل العميل طلب إلى <code>/properties/predict-price</code> مع بيانات
+          العقار
+        </td>
+      </tr>
+      <tr>
+        <td><strong>٢</strong></td>
+        <td>يستقبل خادم NestJS الطلب ويتحقق من صحة البيانات</td>
+      </tr>
+      <tr>
+        <td><strong>٣</strong></td>
+        <td>يرسل الخادم الطلب إلى Ollama لتحليل البيانات وتقدير السعر</td>
+      </tr>
+      <tr>
+        <td><strong>٤</strong></td>
+        <td>يحلل نموذج LLM تفاصيل العقار باستخدام بيانات السوق</td>
+      </tr>
+      <tr>
+        <td><strong>٥</strong></td>
+        <td>يعود Ollama بالسعر المقدر مع التبرير</td>
+      </tr>
+      <tr>
+        <td><strong>٦</strong></td>
+        <td>يرسل الخادم النتيجة النهائية للعميل</td>
+      </tr>
+    </table>
+
+    <h3>البيانات المُرسلة</h3>
+    <pre>
+{
+  "type": "APARTMENT",
+  "location": "العزيزية، حلب",
+  "area": 120,
+  "rooms": 3,
+  "floor": 5
+}</pre
+    >
+
+    <h3>البيانات المُستلمة</h3>
+    <pre>
+{
+  "estimatedPrice": 90000,
+  "currency": "USD",
+  "confidence": "medium",
+  "reasoning": "تم التقدير بناءً على بيانات سوق حلب..."
+}</pre
+    >
+
+    <hr />
+
+    <h2>التسلسل التفصيلي للعمليات</h2>
+
+    <h3>المرحلة الأولى: استقبال الطلب</h3>
+    <ol>
+      <li>يرسل العميل طلب <code>POST /properties/predict-price</code></li>
+      <li>يستقبل <code>PredictionController</code> الطلب</li>
+      <li>يمرر الطلب إلى <code>PredictionService</code></li>
+    </ol>
+
+    <h3>المرحلة الثانية: جمع الصور (اختياري)</h3>
+
+    <p>
+      <strong>في حال إرسال <code>propertyId</code>:</strong>
+    </p>
+    <ul>
+      <li>البحث في قاعدة البيانات عن صور العقار</li>
+      <li>قراءة ملفات الصور من نظام الملفات</li>
+      <li>تحويلها إلى صيغة Base64</li>
+    </ul>
+
+    <p>
+      <strong>في حال إرسال <code>imageBase64</code>:</strong>
+    </p>
+    <ul>
+      <li>استخدام الصور المرسلة مباشرة</li>
+    </ul>
+
+    <h3>المرحلة الثالثة: اختيار النموذج</h3>
+
+    <table>
+      <tr>
+        <th>الحالة</th>
+        <th>النموذج المستخدم</th>
+      </tr>
+      <tr>
+        <td><strong>صور متوفرة</strong></td>
+        <td><code>llama3.2-vision</code> - يحلل الصور والنص معاً</td>
+      </tr>
+      <tr>
+        <td><strong>بدون صور</strong></td>
+        <td><code>llama3.2:3b</code> - يحلل النص فقط</td>
+      </tr>
+    </table>
+
+    <h3>المرحلة الرابعة: المعالجة والاستجابة</h3>
+
+    <p><strong>في حال نجاح Ollama:</strong></p>
+    <ul>
+      <li>تحليل استجابة JSON</li>
+      <li>إرجاع السعر المقدر مع درجة الثقة والتبرير</li>
+    </ul>
+
+    <p><strong>في حال فشل الاتصال بـ Ollama:</strong></p>
+    <ul>
+      <li>استخدام المعادلة الاحتياطية (Fallback)</li>
+      <li>حساب السعر بناءً على بيانات السوق السوري</li>
+    </ul>
+
+    <hr />
+
+    <h2>الميزات الرئيسية</h2>
+
+    <h3>🧠 ذكاء اصطناعي محلي</h3>
+    <p>
+      جميع العمليات تتم على جهازك - لا حاجة للاتصال بالإنترنت - خصوصية تامة
+      للبيانات
+    </p>
+
+    <h3>📊 بيانات السوق السوري</h3>
+    <p>١٠٤ سجل سعري من: حلب، دمشق، اللاذقية، حمص، طرطوس</p>
+
+    <h3>🖼️ تحليل الصور</h3>
+    <p>تقييم حالة العقار، جودة التشطيبات، الإضاءة والإطلالة</p>
+
+    <h3>⚡ نظام احتياطي</h3>
+    <p>يعمل بمعادلة حسابية في حال عدم توفر Ollama</p>
+
+    <hr />
+
+    <h2>المتطلبات التقنية</h2>
+
+    <table>
+      <tr>
+        <th>المكون</th>
+        <th>الإصدار</th>
+        <th>الوظيفة</th>
+      </tr>
+      <tr>
+        <td>Node.js</td>
+        <td>+18</td>
+        <td>بيئة التشغيل</td>
+      </tr>
+      <tr>
+        <td>NestJS</td>
+        <td>10.3</td>
+        <td>إطار العمل</td>
+      </tr>
+      <tr>
+        <td>PostgreSQL</td>
+        <td>+15</td>
+        <td>قاعدة البيانات</td>
+      </tr>
+      <tr>
+        <td>Ollama</td>
+        <td>+0.15</td>
+        <td>محرك الذكاء الاصطناعي</td>
+      </tr>
+      <tr>
+        <td>llama3.2:3b</td>
+        <td>-</td>
+        <td>نموذج النص</td>
+      </tr>
+      <tr>
+        <td>llama3.2-vision</td>
+        <td>-</td>
+        <td>نموذج الرؤية</td>
+      </tr>
+    </table>
+  </body>
+</html>

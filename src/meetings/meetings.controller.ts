@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Param, Post, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { MeetingsService } from './meetings.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -10,6 +10,13 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 export class MeetingsController {
   constructor(private readonly meetingsService: MeetingsService) {}
 
+  @Get('admin/meetings')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN')
+  findAllMeetings() {
+    return this.meetingsService.findAllMeetings();
+  }
+
   @Get('me/meetings')
   @UseGuards(RolesGuard)
   @Roles('USER')
@@ -20,5 +27,19 @@ export class MeetingsController {
   @Get('meetings/:id')
   findOne(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: { userId: number; role: string }) {
     return this.meetingsService.findOne(id, user.userId, user.role);
+  }
+
+  @Post('admin/meetings/:id/complete')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN')
+  completeMeeting(@Param('id', ParseIntPipe) id: number) {
+    return this.meetingsService.completeMeeting(id);
+  }
+
+  @Post('admin/meetings/:id/cancel')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN')
+  cancelMeeting(@Param('id', ParseIntPipe) id: number) {
+    return this.meetingsService.cancelMeeting(id);
   }
 }

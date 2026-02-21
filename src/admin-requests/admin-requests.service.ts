@@ -1,6 +1,11 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { ApproveRequestDto } from './dto/approve-request.dto';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+} from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
+import { ApproveRequestDto } from "./dto/approve-request.dto";
 
 @Injectable()
 export class AdminRequestsService {
@@ -8,15 +13,18 @@ export class AdminRequestsService {
 
   async findPending(status?: string) {
     const requests = await this.prisma.transactionRequest.findMany({
-      where: status ? { status: status as any } : { status: 'PENDING' },
+      where: status
+        ? { status: status as any }
+        : { status: { in: ["PENDING", "APPROVED", "REJECTED"] } },
       select: {
         id: true,
         propertyId: true,
         requesterId: true,
         type: true,
+        status: true,
         createdAt: true,
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
 
     return requests.map((req) => ({
@@ -24,6 +32,7 @@ export class AdminRequestsService {
       propertyId: req.propertyId.toString(),
       requesterId: req.requesterId.toString(),
       type: req.type,
+      status: req.status,
       createdAt: req.createdAt.toISOString(),
     }));
   }
@@ -43,34 +52,34 @@ export class AdminRequestsService {
       });
 
       if (!request) {
-        throw new NotFoundException('Request not found');
+        throw new NotFoundException("Request not found");
       }
 
-      if (request.status !== 'PENDING') {
-        throw new BadRequestException('Request is not pending');
+      if (request.status !== "PENDING") {
+        throw new BadRequestException("Request is not pending");
       }
 
-      if (request.property.status !== 'ACTIVE') {
-        throw new BadRequestException('Property is not active');
+      if (request.property.status !== "ACTIVE") {
+        throw new BadRequestException("Property is not active");
       }
 
       const existingApproved = await tx.transactionRequest.findFirst({
         where: {
           propertyId: request.propertyId,
-          status: 'APPROVED',
+          status: "APPROVED",
           id: { not: id },
         },
       });
 
       if (existingApproved) {
-        throw new ConflictException('Property already has an approved request');
+        throw new ConflictException("Property already has an approved request");
       }
 
       const now = new Date();
       const updatedRequest = await tx.transactionRequest.update({
         where: { id },
-        data: { 
-          status: 'APPROVED',
+        data: {
+          status: "APPROVED",
           decisionAt: now,
         },
       });
@@ -78,18 +87,18 @@ export class AdminRequestsService {
       await tx.transactionRequest.updateMany({
         where: {
           propertyId: request.propertyId,
-          status: 'PENDING',
+          status: "PENDING",
           id: { not: id },
         },
-        data: { 
-          status: 'REJECTED',
+        data: {
+          status: "REJECTED",
           decisionAt: now,
         },
       });
 
       await tx.property.update({
         where: { id: request.propertyId },
-        data: { status: 'RESERVED' },
+        data: { status: "RESERVED" },
       });
 
       const meeting = await tx.meeting.create({
@@ -106,7 +115,7 @@ export class AdminRequestsService {
 
       return {
         requestId: updatedRequest.id.toString(),
-        newStatus: 'APPROVED',
+        newStatus: "APPROVED",
         meetingId: meeting.id.toString(),
       };
     });
@@ -118,24 +127,24 @@ export class AdminRequestsService {
     });
 
     if (!request) {
-      throw new NotFoundException('Request not found');
+      throw new NotFoundException("Request not found");
     }
 
-    if (request.status !== 'PENDING') {
-      throw new BadRequestException('Request is not pending');
+    if (request.status !== "PENDING") {
+      throw new BadRequestException("Request is not pending");
     }
 
     const updated = await this.prisma.transactionRequest.update({
       where: { id },
-      data: { 
-        status: 'REJECTED',
+      data: {
+        status: "REJECTED",
         decisionAt: new Date(),
       },
     });
 
     return {
       requestId: updated.id.toString(),
-      newStatus: 'REJECTED',
+      newStatus: "REJECTED",
     };
   }
 }
