@@ -1,7 +1,18 @@
 import { PrismaClient, PropertyStatus, TransactionType, RequestStatus, MeetingStatus, Role, User, Property, TransactionRequest } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const prisma = new PrismaClient();
+
+/** Approximate coordinates for Syrian cities (for map display) */
+const SYRIA_CITY_COORDS: Record<string, { lat: number; lng: number }> = {
+  Damascus: { lat: 33.5138, lng: 36.2765 },
+  Aleppo: { lat: 36.2021, lng: 37.1343 },
+  Latakia: { lat: 35.5312, lng: 35.7822 },
+  Homs: { lat: 34.7324, lng: 36.7137 },
+  Tartus: { lat: 34.8956, lng: 35.8867 },
+};
 
 async function main() {
   console.log('🌱 Starting database seeding...\n');
@@ -171,6 +182,62 @@ async function main() {
     });
     properties.push(property);
     console.log('✅ Property created:', property.title, `(${property.status})`);
+  }
+
+  // 3b. Seed Syrian properties from data/syria_prices.csv
+  const csvPath = path.join(process.cwd(), 'data', 'syria_prices.csv');
+  if (fs.existsSync(csvPath)) {
+    const content = fs.readFileSync(csvPath, 'utf-8');
+    const lines = content.split('\n').filter((line) => line.trim() && !line.startsWith('#'));
+    const header = lines[0];
+    if (header.startsWith('city,')) {
+      let syrianCount = 0;
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(',');
+        if (cols.length < 10) continue;
+        const city = cols[0]?.trim();
+        const type = (cols[1]?.trim() || 'APARTMENT') as string;
+        const neighborhood = cols[2]?.trim() || city;
+        const area_sqm = parseFloat(cols[3]) || 100;
+        const rooms = parseInt(cols[4], 10) || 2;
+        const floor = parseInt(cols[5], 10) || 0;
+        const price_min = parseFloat(cols[6]) || 0;
+        const price_max = parseFloat(cols[7]) || 0;
+        const price_per_sqm = parseFloat(cols[8]) || 500;
+        const condition = cols[9]?.trim() || 'good';
+        const notes = cols.slice(12).join(',').trim() || '';
+        const price = price_min && price_max ? Math.round((price_min + price_max) / 2) : Math.round(area_sqm * price_per_sqm);
+        const coords = SYRIA_CITY_COORDS[city] || SYRIA_CITY_COORDS.Damascus;
+        const title = `${type === 'HOUSE' ? 'منزل' : 'شقة'} في ${neighborhood}, ${city}`;
+        const location = `${neighborhood}, ${city}, Syria`;
+        const description = notes
+          ? `${condition} condition. ${notes}`
+          : `${condition} property in ${neighborhood}, ${city}.`;
+        const ownerId = users[syrianCount % users.length].id;
+        const property = await prisma.property.create({
+          data: {
+            title,
+            type,
+            address: location,
+            description,
+            price,
+            location,
+            latitude: coords.lat,
+            longitude: coords.lng,
+            area: area_sqm,
+            rooms,
+            floor: floor || undefined,
+            status: PropertyStatus.ACTIVE,
+            ownerId,
+          },
+        });
+        properties.push(property);
+        syrianCount++;
+      }
+      console.log(`✅ Created ${syrianCount} Syrian properties from syria_prices.csv`);
+    }
+  } else {
+    console.log('ℹ️  data/syria_prices.csv not found, skipping Syrian properties');
   }
 
   // 4. Create Property Images (sample file names - actual files should be uploaded)
