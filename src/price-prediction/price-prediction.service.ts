@@ -235,7 +235,7 @@ Note: Prices quoted in USD due to Syrian Pound volatility. Market recovering wit
       images.push(...propertyImages);
     }
 
-    return images.slice(0, 3);
+    return images.slice(0, 1);
   }
 
   private async getPropertyImages(propertyId: number): Promise<string[]> {
@@ -251,7 +251,7 @@ Note: Prices quoted in USD due to Syrian Pound volatility. Market recovering wit
     const base64Images: string[] = [];
     const uploadsDir = path.join(process.cwd(), "public", "uploads");
 
-    for (const img of property.images.slice(0, 3)) {
+    for (const img of property.images.slice(0, 1)) {
       const filePath = path.join(uploadsDir, img.fileName);
       if (fs.existsSync(filePath)) {
         try {
