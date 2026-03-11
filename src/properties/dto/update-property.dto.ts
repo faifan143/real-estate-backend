@@ -5,6 +5,7 @@ import {
   IsNumber,
   IsInt,
   Min,
+  IsIn,
 } from "class-validator";
 import { Type } from "class-transformer";
 
@@ -61,6 +62,23 @@ export class UpdatePropertyDto {
   @IsInt()
   @Type(() => Number)
   floor?: number;
+
+  @IsOptional()
+  @IsString()
+  @IsIn(["SALE", "RENT", "BOTH"])
+  listingType?: "SALE" | "RENT" | "BOTH";
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  salePrice?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  rentPrice?: number;
 
   @IsOptional()
   @IsEnum(["ACTIVE", "RESERVED", "CLOSED"])

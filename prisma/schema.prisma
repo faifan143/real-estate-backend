@@ -54,6 +54,12 @@ model User {
   @@map("users")
 }
 
+enum ListingType {
+  SALE
+  RENT
+  BOTH
+}
+
 enum PropertyType {
   HOUSE
   APARTMENT
@@ -63,9 +69,12 @@ model Property {
   id          Int            @id @default(autoincrement())
   title       String
   type        String
+  listingType ListingType    @default(SALE)
   description String?
   address     String?
-  price       Float
+  price       Float?
+  salePrice   Float?
+  rentPrice   Float?
   location    String
   latitude    Float?
   longitude   Float?
@@ -127,7 +136,7 @@ model Meeting {
   status               MeetingStatus @default(SCHEDULED)
   createdAt            DateTime      @default(now())
 
-  property            Property           @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  property           Property           @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   transactionRequest TransactionRequest @relation(fields: [transactionRequestId], references: [id], onDelete: Cascade)
   buyer              User               @relation("MeetingBuyer", fields: [buyerId], references: [id], onDelete: Cascade)
   seller             User               @relation("MeetingSeller", fields: [sellerId], references: [id], onDelete: Cascade)

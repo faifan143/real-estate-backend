@@ -4,9 +4,9 @@ import {
   ForbiddenException,
   BadRequestException,
   ConflictException,
-} from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateRequestDto } from './dto/create-request.dto';
+} from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
+import { CreateRequestDto } from "./dto/create-request.dto";
 
 @Injectable()
 export class RequestsService {
@@ -18,27 +18,38 @@ export class RequestsService {
     });
 
     if (!property) {
-      throw new NotFoundException('Property not found');
+      throw new NotFoundException("Property not found");
     }
 
-    if (property.status !== 'ACTIVE') {
-      throw new BadRequestException('Property is not available');
+    if (property.status !== "ACTIVE") {
+      throw new BadRequestException("Property is not available");
+    }
+
+    // New validation logic
+    if (dto.type === "BUY" && property.listingType === "RENT") {
+      throw new BadRequestException("This property is only available for rent");
+    }
+    if (dto.type === "RENT" && property.listingType === "SALE") {
+      throw new BadRequestException("This property is only available for sale");
     }
 
     if (property.ownerId === userId) {
-      throw new BadRequestException('Cannot request your own property');
+      throw new BadRequestException("Cannot request your own property");
     }
 
-    const existingActiveRequest = await this.prisma.transactionRequest.findFirst({
-      where: {
-        propertyId,
-        requesterId: userId,
-        status: { in: ['PENDING', 'APPROVED'] },
-      },
-    });
+    const existingActiveRequest =
+      await this.prisma.transactionRequest.findFirst({
+        where: {
+          propertyId,
+          requesterId: userId,
+          status: { in: ["PENDING", "APPROVED"] },
+        },
+      });
 
     if (existingActiveRequest) {
-      throw new ConflictException('You already have an active request for this property');
+      throw new ConflictException(
+        "You already have an active request for this property",
+      );
     }
 
     const request = await this.prisma.transactionRequest.create({
@@ -75,7 +86,7 @@ export class RequestsService {
         status: true,
         createdAt: true,
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
 
     return requests.map((req) => ({
@@ -113,10 +124,14 @@ export class RequestsService {
     });
 
     if (!request) {
-      throw new NotFoundException('Request not found');
+      throw new NotFoundException("Request not found");
     }
 
-    if (role !== 'ADMIN' && request.requesterId !== userId && request.property.ownerId !== userId) {
+    if (
+      role !== "ADMIN" &&
+      request.requesterId !== userId &&
+      request.property.ownerId !== userId
+    ) {
       throw new ForbiddenException();
     }
 
@@ -127,7 +142,9 @@ export class RequestsService {
       type: request.type,
       status: request.status,
       createdAt: request.createdAt.toISOString(),
-      decisionAt: request.decisionAt ? request.decisionAt.toISOString() : undefined,
+      decisionAt: request.decisionAt
+        ? request.decisionAt.toISOString()
+        : undefined,
     };
   }
 }

@@ -190,6 +190,17 @@ Note: Prices quoted in USD due to Syrian Pound volatility. Market recovering wit
 
   async predictPrice(dto: PredictPriceDto) {
     try {
+      // If propertyId is provided, fetch listingType if not in DTO
+      if (dto.propertyId && !dto.listingType) {
+        const property = await this.prisma.property.findUnique({
+          where: { id: dto.propertyId },
+          select: { listingType: true },
+        });
+        if (property) {
+          dto.listingType = property.listingType;
+        }
+      }
+
       const images = await this.collectImages(dto);
 
       if (images.length > 0) {
@@ -329,6 +340,7 @@ PROPERTY TO ANALYZE:
 - Location: ${dto.location}
 - Area: ${dto.area} square meters
 - Rooms: ${dto.rooms}
+${dto.listingType ? `- Listed for: ${dto.listingType}` : ""}
 ${dto.floor ? `- Floor: ${dto.floor}` : ""}
 ${dto.description ? `- Description: ${dto.description}` : ""}
 
@@ -359,6 +371,7 @@ PROPERTY TO ANALYZE:
 - Location: ${dto.location}
 - Area: ${dto.area} square meters
 - Rooms: ${dto.rooms}
+${dto.listingType ? `- Listed for: ${dto.listingType}` : ""}
 ${dto.floor ? `- Floor: ${dto.floor}` : ""}
 ${dto.description ? `- Description: ${dto.description}` : ""}
 
@@ -387,10 +400,14 @@ RESPOND ONLY in this JSON format. Keep keys in English:
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         const parsed = JSON.parse(jsonMatch[0]);
-        let buy = this.toNumber(parsed.estimatedBuyPrice) ?? this.toNumber(parsed.estimatedPrice) ?? fallbackBuy;
+        let buy =
+          this.toNumber(parsed.estimatedBuyPrice) ??
+          this.toNumber(parsed.estimatedPrice) ??
+          fallbackBuy;
         let rent = this.toNumber(parsed.estimatedMonthlyRent);
-        if (rent == null && buy > 0) rent = Math.round((buy * 0.005)); // 0.5% per month
-        if (buy == null && rent != null && rent > 0) buy = Math.round(rent * 200); // ~6% annual yield
+        if (rent == null && buy > 0) rent = Math.round(buy * 0.005); // 0.5% per month
+        if (buy == null && rent != null && rent > 0)
+          buy = Math.round(rent * 200); // ~6% annual yield
         return {
           estimatedPrice: buy,
           estimatedBuyPrice: buy,
@@ -403,11 +420,17 @@ RESPOND ONLY in this JSON format. Keep keys in English:
         };
       }
     } catch {
-      const priceMatch = response.match(/"estimatedBuyPrice"\s*:\s*(\d+(?:\.\d+)?)/);
-      const rentMatch = response.match(/"estimatedMonthlyRent"\s*:\s*(\d+(?:\.\d+)?)/);
+      const priceMatch = response.match(
+        /"estimatedBuyPrice"\s*:\s*(\d+(?:\.\d+)?)/,
+      );
+      const rentMatch = response.match(
+        /"estimatedMonthlyRent"\s*:\s*(\d+(?:\.\d+)?)/,
+      );
       if (priceMatch || rentMatch) {
         const buy = priceMatch ? parseFloat(priceMatch[1]) : fallbackBuy;
-        const rent = rentMatch ? parseFloat(rentMatch[1]) : Math.round(buy * 0.005);
+        const rent = rentMatch
+          ? parseFloat(rentMatch[1])
+          : Math.round(buy * 0.005);
         return {
           estimatedPrice: buy,
           estimatedBuyPrice: buy,
@@ -461,7 +484,10 @@ RESPOND ONLY in this JSON format. Keep keys in English:
   }
 
   /** Monthly rent estimate (USD). Uses ~0.5% of buy price per month when buyPrice provided. */
-  private calculateFallbackMonthlyRent(dto: PredictPriceDto, buyPrice?: number): number {
+  private calculateFallbackMonthlyRent(
+    dto: PredictPriceDto,
+    buyPrice?: number,
+  ): number {
     const buy = buyPrice ?? this.calculateFallbackPrice(dto);
     return Math.round(buy * 0.005); // 0.5% per month ≈ 6% annual yield
   }

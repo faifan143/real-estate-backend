@@ -15,13 +15,22 @@ export class PropertiesService {
   async create(userId: number, dto: CreatePropertyDto, images: string[] = []) {
     const address = dto.address || "";
     const location = dto.location || address;
+
+    // Mapping legacy 'price' to 'salePrice' if salePrice is not explicitly provided
+    const salePrice = dto.salePrice ?? dto.price ?? 0;
+    const rentPrice = dto.rentPrice ?? null;
+    const listingType = dto.listingType || "SALE";
+
     const property = await this.prisma.property.create({
       data: {
         title: dto.title,
         type: dto.type,
+        listingType: listingType,
         address: dto.address || null,
         description: dto.description || null,
-        price: dto.price ?? 0,
+        price: salePrice, // Keep for compatibility
+        salePrice: salePrice,
+        rentPrice: rentPrice,
         location: location,
         latitude: dto.latitude ?? null,
         longitude: dto.longitude ?? null,
@@ -55,7 +64,10 @@ export class PropertiesService {
       propertyId: property.id.toString(),
       title: property.title,
       type: property.type,
+      listingType: property.listingType,
       status: property.status,
+      salePrice: property.salePrice ?? property.price,
+      rentPrice: property.rentPrice,
       images: property.images.map((img) => ({
         imageId: img.id.toString(),
         fileName: img.fileName,
@@ -88,9 +100,12 @@ export class PropertiesService {
       ownerId: property.ownerId.toString(),
       title: property.title,
       type: property.type,
+      listingType: property.listingType,
       address: property.address || undefined,
       description: property.description || undefined,
       price: property.price,
+      salePrice: property.salePrice ?? property.price,
+      rentPrice: property.rentPrice ?? undefined,
       location: property.location,
       latitude: property.latitude ?? undefined,
       longitude: property.longitude ?? undefined,
@@ -126,9 +141,20 @@ export class PropertiesService {
     const updateData: any = {};
     if (dto.title !== undefined) updateData.title = dto.title;
     if (dto.type !== undefined) updateData.type = dto.type;
+    if (dto.listingType !== undefined) updateData.listingType = dto.listingType;
     if (dto.address !== undefined) updateData.address = dto.address;
     if (dto.description !== undefined) updateData.description = dto.description;
-    if (dto.price !== undefined) updateData.price = dto.price;
+
+    if (dto.salePrice !== undefined) {
+      updateData.salePrice = dto.salePrice;
+      updateData.price = dto.salePrice; // Keep in sync
+    } else if (dto.price !== undefined) {
+      updateData.price = dto.price;
+      updateData.salePrice = dto.price;
+    }
+
+    if (dto.rentPrice !== undefined) updateData.rentPrice = dto.rentPrice;
+
     if (dto.location !== undefined) updateData.location = dto.location;
     if (dto.latitude !== undefined) updateData.latitude = dto.latitude;
     if (dto.longitude !== undefined) updateData.longitude = dto.longitude;

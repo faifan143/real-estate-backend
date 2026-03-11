@@ -5,6 +5,7 @@ import {
   IsNumber,
   IsInt,
   Min,
+  IsIn,
 } from "class-validator";
 import { Type } from "class-transformer";
 
@@ -26,10 +27,27 @@ export class CreatePropertyDto {
   description?: string;
 
   @IsOptional()
+  @IsString()
+  @IsIn(["SALE", "RENT", "BOTH"])
+  listingType?: "SALE" | "RENT" | "BOTH";
+
+  @IsOptional()
   @IsNumber()
   @Min(0)
   @Type(() => Number)
   price?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  salePrice?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  rentPrice?: number;
 
   @IsOptional()
   @IsString()

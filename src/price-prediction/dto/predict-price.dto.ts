@@ -9,6 +9,11 @@ export class PredictPriceDto {
   @IsIn(["HOUSE", "APARTMENT"])
   type: string;
 
+  @IsOptional()
+  @IsString()
+  @IsIn(["SALE", "RENT", "BOTH"])
+  listingType?: string;
+
   @IsString()
   location: string;
 
