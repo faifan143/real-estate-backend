@@ -1,4 +1,12 @@
-import { IsNotEmpty, IsString, IsOptional, IsNumber, IsInt, Min } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsInt,
+  Min,
+} from "class-validator";
+import { Type } from "class-transformer";
 
 export class CreatePropertyDto {
   @IsString()
@@ -20,6 +28,7 @@ export class CreatePropertyDto {
   @IsOptional()
   @IsNumber()
   @Min(0)
+  @Type(() => Number)
   price?: number;
 
   @IsOptional()
@@ -28,23 +37,28 @@ export class CreatePropertyDto {
 
   @IsOptional()
   @IsNumber()
+  @Type(() => Number)
   latitude?: number;
 
   @IsOptional()
   @IsNumber()
+  @Type(() => Number)
   longitude?: number;
 
   @IsOptional()
   @IsNumber()
   @Min(0)
+  @Type(() => Number)
   area?: number;
 
   @IsOptional()
   @IsInt()
   @Min(0)
+  @Type(() => Number)
   rooms?: number;
 
   @IsOptional()
   @IsInt()
+  @Type(() => Number)
   floor?: number;
 }

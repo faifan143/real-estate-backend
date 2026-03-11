@@ -1,14 +1,19 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreatePropertyDto } from './dto/create-property.dto';
-import { UpdatePropertyDto } from './dto/update-property.dto';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
+import { CreatePropertyDto } from "./dto/create-property.dto";
+import { UpdatePropertyDto } from "./dto/update-property.dto";
 
 @Injectable()
 export class PropertiesService {
   constructor(private prisma: PrismaService) {}
 
-  async create(userId: number, dto: CreatePropertyDto) {
-    const address = dto.address || '';
+  async create(userId: number, dto: CreatePropertyDto, images: string[] = []) {
+    const address = dto.address || "";
     const location = dto.location || address;
     const property = await this.prisma.property.create({
       data: {
@@ -24,6 +29,11 @@ export class PropertiesService {
         rooms: dto.rooms ?? null,
         floor: dto.floor ?? null,
         ownerId: userId,
+        images: {
+          create: images.map((fileName) => ({
+            fileName,
+          })),
+        },
       },
     });
 
@@ -39,7 +49,7 @@ export class PropertiesService {
       },
     });
 
-    const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+    const baseUrl = process.env.BASE_URL || "http://localhost:3000";
 
     return properties.map((property) => ({
       propertyId: property.id.toString(),
@@ -63,10 +73,10 @@ export class PropertiesService {
     });
 
     if (!property) {
-      throw new NotFoundException('Property not found');
+      throw new NotFoundException("Property not found");
     }
 
-    const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+    const baseUrl = process.env.BASE_URL || "http://localhost:3000";
     const formattedImages = property.images.map((img) => ({
       imageId: img.id.toString(),
       fileName: img.fileName,
@@ -94,16 +104,22 @@ export class PropertiesService {
     };
   }
 
-  async update(id: number, userId: number, role: string, dto: UpdatePropertyDto) {
+  async update(
+    id: number,
+    userId: number,
+    role: string,
+    dto: UpdatePropertyDto,
+    images: string[] = [],
+  ) {
     const property = await this.prisma.property.findUnique({
       where: { id },
     });
 
     if (!property) {
-      throw new NotFoundException('Property not found');
+      throw new NotFoundException("Property not found");
     }
 
-    if (role !== 'ADMIN' && property.ownerId !== userId) {
+    if (role !== "ADMIN" && property.ownerId !== userId) {
       throw new ForbiddenException();
     }
 
@@ -121,6 +137,14 @@ export class PropertiesService {
     if (dto.floor !== undefined) updateData.floor = dto.floor;
     if (dto.status !== undefined) updateData.status = dto.status;
 
+    if (images.length > 0) {
+      updateData.images = {
+        create: images.map((fileName) => ({
+          fileName,
+        })),
+      };
+    }
+
     await this.prisma.property.update({
       where: { id },
       data: updateData,
@@ -135,14 +159,14 @@ export class PropertiesService {
     });
 
     if (!property) {
-      throw new NotFoundException('Property not found');
+      throw new NotFoundException("Property not found");
     }
 
-    if (property.status !== 'ACTIVE') {
-      throw new BadRequestException('Only ACTIVE properties can be deleted');
+    if (property.status !== "ACTIVE") {
+      throw new BadRequestException("Only ACTIVE properties can be deleted");
     }
 
-    if (role !== 'ADMIN' && property.ownerId !== userId) {
+    if (role !== "ADMIN" && property.ownerId !== userId) {
       throw new ForbiddenException();
     }
 

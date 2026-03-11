@@ -1,4 +1,12 @@
-import { IsOptional, IsString, IsEnum, IsNumber, IsInt, Min } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsEnum,
+  IsNumber,
+  IsInt,
+  Min,
+} from "class-validator";
+import { Type } from "class-transformer";
 
 export class UpdatePropertyDto {
   @IsOptional()
@@ -20,6 +28,7 @@ export class UpdatePropertyDto {
   @IsOptional()
   @IsNumber()
   @Min(0)
+  @Type(() => Number)
   price?: number;
 
   @IsOptional()
@@ -28,27 +37,32 @@ export class UpdatePropertyDto {
 
   @IsOptional()
   @IsNumber()
+  @Type(() => Number)
   latitude?: number;
 
   @IsOptional()
   @IsNumber()
+  @Type(() => Number)
   longitude?: number;
 
   @IsOptional()
   @IsNumber()
   @Min(0)
+  @Type(() => Number)
   area?: number;
 
   @IsOptional()
   @IsInt()
   @Min(0)
+  @Type(() => Number)
   rooms?: number;
 
   @IsOptional()
   @IsInt()
+  @Type(() => Number)
   floor?: number;
 
   @IsOptional()
-  @IsEnum(['ACTIVE', 'RESERVED', 'CLOSED'])
-  status?: 'ACTIVE' | 'RESERVED' | 'CLOSED';
+  @IsEnum(["ACTIVE", "RESERVED", "CLOSED"])
+  status?: "ACTIVE" | "RESERVED" | "CLOSED";
 }
