@@ -332,7 +332,7 @@ async function main() {
     {
       propertyId: properties[4].id, // Family Home
       requesterId: users[0].id, // John Doe requests Bob's house
-      type: TransactionType.BUY,
+      type: TransactionType.RENT,
       status: RequestStatus.REJECTED,
       decisionAt: new Date(),
     },
